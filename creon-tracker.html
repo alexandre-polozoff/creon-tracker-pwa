@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Creon Tracker">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Track your Creon medication, meals, symptoms, and digestive health. Privacy-first health tracking app.">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Favicons and Apple Touch Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <title>Creon Tracker - Medication & Health Tracking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        input[type="number"],
+        input[type="time"],
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .stool-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .stool-option,
+        .stool-option-2 {
+            padding: 18px 12px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stool-option:active,
+        .stool-option-2:active {
+            transform: scale(0.95);
+        }
+
+        .stool-option.selected,
+        .stool-option-2.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+            margin-top: 10px;
+            min-height: 56px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .history-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .history-item:active {
+            background: #f8f9ff;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 15px;
+        }
+
+        .history-time {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .history-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .detail-item {
+            background: #f8f9ff;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            min-height: 40px;
+        }
+
+        .delete-btn:active {
+            background: #ff5252;
+            transform: scale(0.95);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 16px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .tab:active {
+            transform: scale(0.95);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .type-badge {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-right: 8px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .type-badge.stool {
+            background: #764ba2;
+        }
+
+        /* Tablet and larger screens */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .card {
+                padding: 30px;
+            }
+
+            .stool-options {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .history-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Improve touch targets */
+        @media (hover: none) and (pointer: coarse) {
+            input, select, textarea, button {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Creon Tracker</h1>
+            <p>Track your medication, meals, and symptoms</p>
+            <p style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">Version 1.2.0</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('log')">Log Creon</button>
+            <button class="tab" onclick="switchTab('stool')">Log Stool</button>
+            <button class="tab" onclick="switchTab('history')">History</button>
+            <button class="tab" onclick="switchTab('settings')">Settings</button>
+        </div>
+
+        <div id="log-tab" class="tab-content active">
+            <div class="card">
+                <form id="tracking-form">
+                    <div class="form-group">
+                        <label for="doses">Number of Creon Doses</label>
+                        <input type="number" id="doses" min="0" max="20" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time Taken</label>
+                        <input type="time" id="time" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meal">Meal/Snack</label>
+                        <input type="text" id="meal" placeholder="e.g., Breakfast, Lunch, Snack" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="symptoms">Symptoms (if any)</label>
+                        <textarea id="symptoms" placeholder="Describe any symptoms you're experiencing..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Save Entry</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="stool-tab" class="tab-content">
+            <div class="card">
+                <form id="stool-form">
+                    <div class="form-group">
+                        <label for="stoolTime">Time</label>
+                        <input type="time" id="stoolTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stool Quality (Bristol Stool Scale)</label>
+                        <div class="stool-options">
+                            <div class="stool-option-2" data-value="1">
+                                Type 1<br>Hard lumps
+                            </div>
+                            <div class="stool-option-2" data-value="2">
+                                Type 2<br>Lumpy
+                            </div>
+                            <div class="stool-option-2" data-value="3">
+                                Type 3<br>Cracked
+                            </div>
+                            <div class="stool-option-2" data-value="4">
+                                Type 4<br>Smooth
+                            </div>
+                            <div class="stool-option-2" data-value="5">
+                                Type 5<br>Soft blobs
+                            </div>
+                            <div class="stool-option-2" data-value="6">
+                                Type 6<br>Mushy
+                            </div>
+                            <div class="stool-option-2" data-value="7">
+                                Type 7<br>Watery
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stoolNotes">Notes (optional)</label>
+                        <textarea id="stoolNotes" placeholder="Any additional notes about this bowel movement..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Save Stool Entry</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="history-tab" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h2 style="margin: 0;">Your Tracking History</h2>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="showExportSettings()" style="background: #667eea; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                            ⚙️ Auto-Export
+                        </button>
+                        <button onclick="exportData()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                            📥 Export Now
+                        </button>
+                    </div>
+                </div>
+                <div id="history-list"></div>
+            </div>
+        </div>
+
+        <!-- Auto-Export Settings Modal -->
+        <div id="export-settings-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px; overflow-y: auto;">
+            <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <h2 style="margin-top: 0; color: #667eea;">Monthly Auto-Export Settings</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="auto-export-enabled" style="width: 24px; height: 24px; margin-right: 10px; cursor: pointer;">
+                        <span style="font-size: 16px; font-weight: 600;">Enable automatic monthly exports</span>
+                    </label>
+                    <p style="margin: 10px 0 0 34px; color: #666; font-size: 14px;">Automatically export your data on the last day of each month</p>
+                </div>
+
+                <div id="last-export-info" style="background: #f8f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Last export:</strong> <span id="last-export-date">Never</span></p>
+                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;"><strong>Next auto-export:</strong> <span id="next-export-date">-</span></p>
+                </div>
+
+                <div style="background: #fff7ed; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                    <p style="margin: 0; font-size: 14px;"><strong>📋 How it works:</strong></p>
+                    <p style="margin: 8px 0 0 0; font-size: 14px;">When enabled, the app will prompt you to download your monthly data on the last day of each month. You can then send it securely to your doctor.</p>
+                </div>
+
+                <h3 style="color: #667eea; margin-top: 30px;">🔒 Securely Sending to Your Gastroenterologist</h3>
+                
+                <div style="margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 8px; color: #333;">Option 1: Patient Portal (Most Secure)</h4>
+                    <p style="margin: 0; font-size: 14px; color: #666;">Most healthcare providers have secure patient portals where you can upload documents. This is the most secure method.</p>
+                    <ol style="margin: 8px 0 0 20px; font-size: 14px; color: #666;">
+                        <li>Log into your doctor's patient portal</li>
+                        <li>Look for "Upload Documents" or "Send Message"</li>
+                        <li>Attach your exported CSV file</li>
+                        <li>Add a note: "Monthly Creon tracking data for [Month Year]"</li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 8px; color: #333;">Option 2: Encrypted Email</h4>
+                    <p style="margin: 0; font-size: 14px; color: #666;">If your doctor accepts encrypted email:</p>
+                    <ol style="margin: 8px 0 0 20px; font-size: 14px; color: #666;">
+                        <li>Use ProtonMail, Tutanota, or your provider's secure email</li>
+                        <li>Attach the CSV file</li>
+                        <li>Subject: "Creon Tracking - [Your Name] - [Month Year]"</li>
+                        <li>Body: Brief summary of any notable symptoms or patterns</li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 8px; color: #333;">Option 3: Secure File Sharing</h4>
+                    <p style="margin: 0; font-size: 14px; color: #666;">Use HIPAA-compliant file sharing:</p>
+                    <ul style="margin: 8px 0 0 20px; font-size: 14px; color: #666;">
+                        <li><strong>Virtru:</strong> Email encryption service</li>
+                        <li><strong>Secure cloud:</strong> Google Drive/Dropbox (if provider approved)</li>
+                        <li>Set expiration dates on shared links</li>
+                        <li>Use password protection</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 8px; color: #333;">Option 4: Bring to Appointment</h4>
+                    <p style="margin: 0; font-size: 14px; color: #666;">Simply bring the file on a USB drive or printed out to your next appointment.</p>
+                </div>
+
+                <div style="background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <p style="margin: 0; font-size: 14px;"><strong>⚠️ Never send via:</strong></p>
+                    <ul style="margin: 8px 0 0 20px; font-size: 14px;">
+                        <li>Regular unsecured email</li>
+                        <li>Text message or SMS</li>
+                        <li>Social media messaging</li>
+                        <li>Public file sharing links without password</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button onclick="saveExportSettings()" style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                        Save Settings
+                    </button>
+                    <button onclick="closeExportSettings()" style="flex: 1; background: #e5e7eb; color: #374151; border: none; padding: 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-tab" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">Settings</h2>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="autoExportToggle" style="width: auto; margin-right: 12px; width: 20px; height: 20px; cursor: pointer;">
+                        <span>Automatically export data at the end of each month</span>
+                    </label>
+                    <p style="margin: 10px 0 0 32px; font-size: 14px; color: #666;">
+                        When enabled, the app will automatically download a monthly report on the last day of each month. You can then share it with your healthcare provider.
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9ff; border-radius: 10px; border-left: 4px solid #667eea;">
+                    <p style="margin: 0 0 10px 0; font-weight: 600; color: #667eea;">Last Export Check: <span id="lastExportCheck">Never</span></p>
+                    <p style="margin: 0; font-size: 14px; color: #666;">Next scheduled export: <span id="nextExport">Not scheduled</span></p>
+                </div>
+
+                <h3 style="margin-top: 40px; margin-bottom: 15px; color: #667eea;">📧 How to Securely Share Your Data with Your Doctor</h3>
+                
+                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 1: Email (Encrypted)</h4>
+                    <div style="padding-left: 20px;">
+                        <p style="margin: 0 0 10px 0;">1. Export your data (CSV file will download)</p>
+                        <p style="margin: 0 0 10px 0;">2. Use encrypted email services:</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li><strong>ProtonMail:</strong> End-to-end encrypted email</li>
+                            <li><strong>Gmail Confidential Mode:</strong> Set expiration and require passcode</li>
+                            <li><strong>Outlook Encrypt:</strong> Built-in encryption for Office 365</li>
+                        </ul>
+                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">⚠️ Avoid regular email without encryption as it contains sensitive health information</p>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 2: Patient Portal</h4>
+                    <div style="padding-left: 20px;">
+                        <p style="margin: 0 0 10px 0;">1. Export your data</p>
+                        <p style="margin: 0 0 10px 0;">2. Log into your healthcare provider's patient portal (MyChart, FollowMyHealth, etc.)</p>
+                        <p style="margin: 0 0 10px 0;">3. Upload the CSV file to "Messages" or "Documents" section</p>
+                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #10b981;">✅ Most secure option - HIPAA compliant</p>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 3: Secure File Sharing</h4>
+                    <div style="padding-left: 20px;">
+                        <p style="margin: 0 0 10px 0;">1. Export your data</p>
+                        <p style="margin: 0 0 10px 0;">2. Upload to encrypted cloud storage:</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li><strong>Proton Drive:</strong> End-to-end encrypted, share with password</li>
+                            <li><strong>Tresorit:</strong> Healthcare-grade encryption</li>
+                            <li><strong>OneDrive/Google Drive:</strong> Use password-protected sharing links</li>
+                        </ul>
+                        <p style="margin: 0 0 10px 0;">3. Share the secure link and password separately with your doctor</p>
+                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">💡 Send password via text/phone, never in the same email as the link</p>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 4: Physical Copy</h4>
+                    <div style="padding-left: 20px;">
+                        <p style="margin: 0 0 10px 0;">1. Export your data</p>
+                        <p style="margin: 0 0 10px 0;">2. Open the CSV file in Excel or Google Sheets</p>
+                        <p style="margin: 0 0 10px 0;">3. Print and bring to your appointment</p>
+                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">📄 Good for in-person visits, no digital security concerns</p>
+                    </div>
+                </div>
+
+                <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 15px; margin-top: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #856404;">🔒 Security Best Practices</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>Never share unencrypted health data via regular email or text</li>
+                        <li>Use unique, strong passwords for shared links</li>
+                        <li>Set expiration dates on shared files (7-14 days)</li>
+                        <li>Delete the file from shared locations after your doctor has received it</li>
+                        <li>Verify your doctor's email address before sending</li>
+                    </ul>
+                </div>
+
+                <div style="background: #d1ecf1; border: 2px solid #17a2b8; border-radius: 10px; padding: 15px; margin-top: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #0c5460;">💡 Pro Tips</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>Export data 2-3 days before your appointment</li>
+                        <li>Name files clearly: "John-Doe-Creon-Tracking-Jan-2026.csv"</li>
+                        <li>Include a date range in your message to your doctor</li>
+                        <li>Keep copies of all exports in a secure backup</li>
+                        <li>Ask your doctor which method they prefer</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedStool = null;
+        let selectedStool2 = null;
+
+        // Set current time as default
+        document.getElementById('time').value = new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Load settings
+        function loadSettings() {
+            const autoExport = localStorage.getItem('autoExportEnabled') === 'true';
+            document.getElementById('autoExportToggle').checked = autoExport;
+            
+            const lastCheck = localStorage.getItem('lastExportCheck');
+            if (lastCheck) {
+                document.getElementById('lastExportCheck').textContent = new Date(lastCheck).toLocaleDateString();
+            }
+            
+            updateNextExportDate();
+        }
+
+        // Save auto-export setting
+        document.getElementById('autoExportToggle').addEventListener('change', function() {
+            localStorage.setItem('autoExportEnabled', this.checked);
+            updateNextExportDate();
+            if (this.checked) {
+                alert('Monthly auto-export enabled! The app will automatically download your data on the last day of each month.');
+            } else {
+                alert('Monthly auto-export disabled.');
+            }
+        });
+
+        // Update next export date display
+        function updateNextExportDate() {
+            const autoExport = localStorage.getItem('autoExportEnabled') === 'true';
+            const nextExportSpan = document.getElementById('nextExport');
+            
+            if (autoExport) {
+                const today = new Date();
+                const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                nextExportSpan.textContent = lastDayOfMonth.toLocaleDateString();
+                nextExportSpan.style.color = '#10b981';
+                nextExportSpan.style.fontWeight = '600';
+            } else {
+                nextExportSpan.textContent = 'Not scheduled';
+                nextExportSpan.style.color = '#666';
+                nextExportSpan.style.fontWeight = 'normal';
+            }
+        }
+
+        // Check if auto-export should run
+        function checkAutoExport() {
+            const autoExport = localStorage.getItem('autoExportEnabled') === 'true';
+            if (!autoExport) return;
+
+            const today = new Date();
+            const lastCheck = localStorage.getItem('lastExportCheck');
+            
+            // Check if it's the last day of the month
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const isLastDayOfMonth = tomorrow.getMonth() !== today.getMonth();
+            
+            // Check if we haven't exported today
+            const lastCheckDate = lastCheck ? new Date(lastCheck).toDateString() : null;
+            const todayDate = today.toDateString();
+            
+            if (isLastDayOfMonth && lastCheckDate !== todayDate) {
+                // Perform auto-export
+                exportData(true);
+                localStorage.setItem('lastExportCheck', today.toISOString());
+                document.getElementById('lastExportCheck').textContent = today.toLocaleDateString();
+            }
+        }
+
+        // Run auto-export check on page load
+        window.addEventListener('load', function() {
+            loadSettings();
+            checkAutoExport();
+        });
+
+        // Stool quality selection for stool form
+        document.querySelectorAll('.stool-option-2').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.stool-option-2').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedStool2 = this.dataset.value;
+            });
+        });
+
+        // Creon form submission
+        document.getElementById('tracking-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const entry = {
+                id: Date.now(),
+                type: 'creon',
+                date: new Date().toISOString().split('T')[0],
+                time: document.getElementById('time').value,
+                doses: document.getElementById('doses').value,
+                meal: document.getElementById('meal').value,
+                symptoms: document.getElementById('symptoms').value,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                localStorage.setItem(`creon:${entry.id}`, JSON.stringify(entry));
+                
+                // Reset form
+                this.reset();
+                document.getElementById('time').value = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                alert('Creon entry saved successfully!');
+                switchTab('history');
+            } catch (error) {
+                console.error('Error saving entry:', error);
+                alert('Error saving entry. Please try again.');
+            }
+        });
+
+        // Stool form submission
+        document.getElementById('stool-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!selectedStool2) {
+                alert('Please select a stool quality type');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                type: 'stool',
+                date: new Date().toISOString().split('T')[0],
+                time: document.getElementById('stoolTime').value,
+                quality: selectedStool2,
+                notes: document.getElementById('stoolNotes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                localStorage.setItem(`stool:${entry.id}`, JSON.stringify(entry));
+                
+                // Reset form
+                this.reset();
+                document.querySelectorAll('.stool-option-2').forEach(opt => opt.classList.remove('selected'));
+                selectedStool2 = null;
+
+                alert('Stool entry saved successfully!');
+                switchTab('history');
+            } catch (error) {
+                console.error('Error saving entry:', error);
+                alert('Error saving entry. Please try again.');
+            }
+        });
+
+        async function loadHistory() {
+            const historyList = document.getElementById('history-list');
+            
+            try {
+                const entries = [];
+                
+                // Load all entries from localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('creon:') || key.startsWith('stool:')) {
+                        try {
+                            const data = localStorage.getItem(key);
+                            if (data) {
+                                entries.push(JSON.parse(data));
+                            }
+                        } catch (error) {
+                            console.error(`Error loading entry ${key}:`, error);
+                        }
+                    }
+                }
+
+                if (entries.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state">No entries yet. Start tracking your medication and bowel movements!</div>';
+                    return;
+                }
+
+                entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                historyList.innerHTML = entries.map(entry => {
+                    if (entry.type === 'creon') {
+                        return `
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <div>
+                                        <span class="type-badge">💊 CREON</span>
+                                        <div style="margin-top: 8px;">
+                                            <span class="history-date">${entry.date}</span>
+                                            <span class="history-time"> • ${entry.time}</span>
+                                        </div>
+                                    </div>
+                                    <button class="delete-btn" onclick="deleteEntry('creon:${entry.id}')">Delete</button>
+                                </div>
+                                <div class="history-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Doses</div>
+                                        <div class="detail-value">${entry.doses}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Meal</div>
+                                        <div class="detail-value">${entry.meal}</div>
+                                    </div>
+                                    ${entry.symptoms ? `
+                                    <div class="detail-item" style="grid-column: 1 / -1;">
+                                        <div class="detail-label">Symptoms</div>
+                                        <div class="detail-value">${entry.symptoms}</div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <div>
+                                        <span class="type-badge stool">🚽 STOOL</span>
+                                        <div style="margin-top: 8px;">
+                                            <span class="history-date">${entry.date}</span>
+                                            <span class="history-time"> • ${entry.time}</span>
+                                        </div>
+                                    </div>
+                                    <button class="delete-btn" onclick="deleteEntry('stool:${entry.id}')">Delete</button>
+                                </div>
+                                <div class="history-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Bristol Type</div>
+                                        <div class="detail-value">Type ${entry.quality}</div>
+                                    </div>
+                                    ${entry.notes ? `
+                                    <div class="detail-item" style="grid-column: 1 / -1;">
+                                        <div class="detail-label">Notes</div>
+                                        <div class="detail-value">${entry.notes}</div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            } catch (error) {
+                console.error('Error loading history:', error);
+                historyList.innerHTML = '<div class="empty-state">Error loading history. Please refresh the page.</div>';
+            }
+        }
+
+        async function deleteEntry(key) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                try {
+                    localStorage.removeItem(key);
+                    loadHistory();
+                } catch (error) {
+                    console.error('Error deleting entry:', error);
+                    alert('Error deleting entry. Please try again.');
+                }
+            }
+        }
+
+        async function exportData(isAutoExport = false) {
+            try {
+                const entries = [];
+                
+                // Load all entries from localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('creon:') || key.startsWith('stool:')) {
+                        try {
+                            const data = localStorage.getItem(key);
+                            if (data) {
+                                entries.push(JSON.parse(data));
+                            }
+                        } catch (error) {
+                            console.error(`Error loading entry ${key}:`, error);
+                        }
+                    }
+                }
+
+                if (entries.length === 0) {
+                    if (!isAutoExport) {
+                        alert('No data to export yet!');
+                    }
+                    return;
+                }
+
+                // Sort by date/time
+                entries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                // Create CSV content
+                let csv = 'Type,Date,Time,Doses,Meal,Symptoms,Stool Quality,Stool Notes\n';
+                
+                entries.forEach(entry => {
+                    if (entry.type === 'creon') {
+                        csv += `Creon,"${entry.date}","${entry.time}","${entry.doses}","${entry.meal}","${entry.symptoms || ''}","",""\n`;
+                    } else {
+                        csv += `Stool,"${entry.date}","${entry.time}","","","","Type ${entry.quality}","${entry.notes || ''}"\n`;
+                    }
+                });
+
+                // Create download with month/year in filename
+                const now = new Date();
+                const monthYear = `${now.toLocaleString('default', { month: 'short' })}-${now.getFullYear()}`;
+                const filename = `creon-tracker-${monthYear}-export.csv`;
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                if (isAutoExport) {
+                    alert(`📅 Monthly Report Ready!\n\nYour ${monthYear} data has been automatically exported.\n\nCheck your Downloads folder for: ${filename}\n\nSee the Settings tab for instructions on securely sharing with your doctor.`);
+                } else {
+                    alert('Data exported! The file has been downloaded. Check the Settings tab for instructions on securely sharing with your doctor.');
+                }
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                if (!isAutoExport) {
+                    alert('Error exporting data. Please try again.');
+                }
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'log') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('log-tab').classList.add('active');
+            } else if (tab === 'stool') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('stool-tab').classList.add('active');
+                // Set current time for stool form
+                document.getElementById('stoolTime').value = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } else if (tab === 'history') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('history-tab').classList.add('active');
+                loadHistory();
+            } else if (tab === 'settings') {
+                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.getElementById('settings-tab').classList.add('active');
+                loadSettings();
+            }
+        }
+
+        // Load history on page load
+        if (document.getElementById('history-tab').classList.contains('active')) {
+            loadHistory();
+        }
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available, prompt user to reload
+                                    if (confirm('A new version of Creon Tracker is available. Reload to update?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        let installPromptShown = localStorage.getItem('installPromptShown');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Only show install prompt if user hasn't dismissed it before
+            if (!installPromptShown) {
+                showInstallPromotion();
+            }
+        });
+
+        function showInstallPromotion() {
+            // Create install banner
+            const installBanner = document.createElement('div');
+            installBanner.id = 'install-banner';
+            installBanner.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px 20px;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+                animation: slideUp 0.3s ease-out;
+            `;
+            
+            installBanner.innerHTML = `
+                <div style="flex: 1; min-width: 200px;">
+                    <strong style="display: block; margin-bottom: 5px;">📱 Install Creon Tracker</strong>
+                    <span style="font-size: 14px;">Install this app on your device for quick access and offline use</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="install-button" style="background: white; color: #667eea; border: none; padding: 10px 20px; border-radius: 5px; font-weight: 600; cursor: pointer;">
+                        Install
+                    </button>
+                    <button id="dismiss-button" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: 600; cursor: pointer;">
+                        Not Now
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(installBanner);
+            
+            // Install button handler
+            document.getElementById('install-button').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                }
+                installBanner.remove();
+                localStorage.setItem('installPromptShown', 'true');
+            });
+            
+            // Dismiss button handler
+            document.getElementById('dismiss-button').addEventListener('click', () => {
+                installBanner.remove();
+                localStorage.setItem('installPromptShown', 'true');
+            });
+        }
+
+        // Detect if app is installed
+        window.addEventListener('appinstalled', () => {
+            console.log('Creon Tracker was installed');
+            deferredPrompt = null;
+            // Hide install banner if showing
+            const banner = document.getElementById('install-banner');
+            if (banner) banner.remove();
+        });
+
+        // Add CSS animation for install banner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
