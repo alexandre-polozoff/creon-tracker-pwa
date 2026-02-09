@@ -1,8 +1,8 @@
 // Service Worker for Creon Tracker PWA
-// Version 1.2.0 - Improved caching and error handling
+// Version 1.2.3 - Improved caching and error handling
 
-const CACHE_NAME = 'creon-tracker-v1.2.0';
-const RUNTIME_CACHE = 'creon-tracker-runtime-v1.2.0';
+const CACHE_NAME = 'creon-tracker-v1.2.3';
+const RUNTIME_CACHE = 'creon-tracker-runtime-v1.2.3';
 
 // Files to cache on install
 const urlsToCache = [
@@ -15,7 +15,7 @@ const urlsToCache = [
 
 // Install event - cache critical files
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing version 1.2.0...');
+  console.log('[Service Worker] Installing version 1.2.3...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -34,7 +34,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating version 1.2.0...');
+  console.log('[Service Worker] Activating version 1.2.3...');
   
   // List of current caches to keep
   const cacheWhitelist = [CACHE_NAME, RUNTIME_CACHE];
@@ -156,7 +156,7 @@ self.addEventListener('message', (event) => {
   
   if (event.data && event.data.type === 'GET_VERSION') {
     event.ports[0].postMessage({
-      version: '1.2.0',
+      version: '1.2.3',
       cacheName: CACHE_NAME
     });
   }
@@ -278,4 +278,4 @@ self.addEventListener('unhandledrejection', (event) => {
 });
 
 // Log service worker lifecycle
-console.log('[Service Worker] Script loaded - Version 1.2.0');
+console.log('[Service Worker] Script loaded - Version 1.2.3');
