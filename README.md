@@ -1,6 +1,6 @@
 # creon-tracker-pwa
 
-Log Creon doses, Bristol Stool on local device data stored. Instructions on how to move the file safely to your doctor. 
+Log Creon doses and Bristol Stool. All data is stored on local device . Read documentation on how to move the file safely to your doctor. 
 
 To install this app on your device
 
