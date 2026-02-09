@@ -4,7 +4,7 @@ Log Creon doses, Bristol Stool on local device data stored. Instructions on how 
 
 To install this app on your device
 
-Go to [Link https://alexandre-polozoff.github.io/creon-tracker-pwa/creon-tracker.html] 
+Go to [https://alexandre-polozoff.github.io/creon-tracker-pwa/creon-tracker.html](https://alexandre-polozoff.github.io/creon-tracker-pwa/creon-tracker.html)
 
 Click on install.
 
