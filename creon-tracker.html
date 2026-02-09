@@ -74,9 +74,35 @@
             font-size: 16px;
         }
 
+        /* Form validation styles */
+        .required::after {
+            content: " *";
+            color: #f44336;
+        }
+
+        .hint {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+
+        .error {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
         input[type="number"],
         input[type="time"],
         input[type="text"],
+        input[type="file"],
         select,
         textarea {
             width: 100%;
@@ -84,7 +110,7 @@
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 18px;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
             -webkit-appearance: none;
             appearance: none;
         }
@@ -94,12 +120,107 @@
         textarea:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.invalid,
+        select.invalid,
+        textarea.invalid {
+            border-color: #f44336;
+        }
+
+        input.valid,
+        select.valid,
+        textarea.valid {
+            border-color: #4caf50;
         }
 
         textarea {
             resize: vertical;
             min-height: 100px;
             font-family: inherit;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .char-count.warning {
+            color: #ff9800;
+        }
+
+        .char-count.error {
+            color: #f44336;
+        }
+
+        .stool-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        /* Meal type radio buttons */
+        .meal-type-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .meal-type-radio {
+            position: relative;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .meal-type-radio input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            z-index: 1;
+        }
+
+        .meal-type-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 12px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+            min-height: 60px;
+        }
+
+        .meal-type-radio input[type="radio"]:checked + .meal-type-label {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .meal-type-radio input[type="radio"]:focus-visible + .meal-type-label {
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+        }
+
+        .meal-type-radio:active .meal-type-label {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 600px) {
+            .meal-type-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .stool-options {
@@ -150,7 +271,7 @@
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s;
+            transition: transform 0.2s, opacity 0.2s;
             margin-top: 10px;
             min-height: 56px;
         }
@@ -159,12 +280,32 @@
             transform: scale(0.98);
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        }
+
         .history-item {
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 15px;
             transition: all 0.3s;
+            position: relative;
         }
 
         .history-item:active {
@@ -223,54 +364,306 @@
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
             font-weight: 600;
-            min-height: 40px;
+            font-size: 14px;
+            transition: all 0.2s;
         }
 
         .delete-btn:active {
-            background: #ff5252;
             transform: scale(0.95);
         }
 
-        .empty-state {
-            text-align: center;
-            color: #999;
-            padding: 40px 20px;
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            min-width: 300px;
+            max-width: 500px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .toast.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .toast.warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .toast.info {
+            background: #2196f3;
+            color: white;
+        }
+
+        .toast-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            opacity: 0.8;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        .toast-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .toast-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .toast-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Modal dialog */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 15px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: scaleIn 0.2s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon {
+            font-size: 32px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .modal-body {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
             font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        /* Loading spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Backup reminder banner */
+        .backup-reminder {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
+        }
+
+        .backup-reminder-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .backup-reminder-content {
+            flex: 1;
+        }
+
+        .backup-reminder-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .backup-reminder-text {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .backup-reminder-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .backup-reminder-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
             margin-bottom: 15px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .tab {
             flex: 1;
-            padding: 16px 12px;
-            background: rgba(255, 255, 255, 0.3);
-            border: none;
-            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
             font-weight: 600;
+            color: #666;
             transition: all 0.3s;
-            color: white;
-            min-width: 100px;
-            white-space: nowrap;
+            border: none;
+            background: transparent;
+            font-size: 15px;
         }
 
         .tab.active {
-            background: white;
-            color: #667eea;
-            transform: scale(1.05);
-        }
-
-        .tab:active {
-            transform: scale(0.95);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .tab-content {
@@ -281,48 +674,121 @@
             display: block;
         }
 
-        .type-badge {
-            background: #667eea;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-right: 8px;
+        .badge {
             display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        .type-badge.stool {
-            background: #764ba2;
+        .badge-creon {
+            background: #e3f2fd;
+            color: #1976d2;
         }
 
-        /* Tablet and larger screens */
-        @media (min-width: 600px) {
-            body {
-                padding: 20px;
+        .badge-stool {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .toast {
+                left: 10px;
+                right: 10px;
+                min-width: auto;
             }
 
-            .header h1 {
-                font-size: 2.5em;
+            .modal {
+                margin: 10px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
+        /* Focus indicators for accessibility */
+        *:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        button:focus-visible,
+        .stool-option:focus-visible {
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .tabs,
+            .btn,
+            .delete-btn {
+                display: none;
             }
 
             .card {
-                padding: 30px;
-            }
-
-            .stool-options {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .history-details {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Improve touch targets */
-        @media (hover: none) and (pointer: coarse) {
-            input, select, textarea, button {
-                font-size: 16px; /* Prevents zoom on iOS */
+                box-shadow: none;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -331,8 +797,8 @@
     <div class="container">
         <div class="header">
             <h1>💊 Creon Tracker</h1>
-            <p>Track your medication, meals, and symptoms</p>
-            <p style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">Version 1.2.0</p>
+            <p>Track your medication and digestive health</p>
+            <p style="font-size: 0.8em; opacity: 0.8;">v1.2.3 Enhanced</p>
         </div>
 
         <div class="tabs">
@@ -342,612 +808,1123 @@
             <button class="tab" onclick="switchTab('settings')">Settings</button>
         </div>
 
+        <!-- Log Creon Tab -->
         <div id="log-tab" class="tab-content active">
             <div class="card">
-                <form id="tracking-form">
+                <h2 style="margin-bottom: 20px; color: #667eea;">Log Creon Dose</h2>
+                <form id="creonForm" onsubmit="logCreon(event)">
                     <div class="form-group">
-                        <label for="doses">Number of Creon Doses</label>
-                        <input type="number" id="doses" min="0" max="20" required>
+                        <label for="doses" class="required">Number of Doses</label>
+                        <input 
+                            type="number" 
+                            id="doses" 
+                            min="1" 
+                            max="20"
+                            required
+                            aria-required="true"
+                            aria-describedby="doses-hint doses-error"
+                        >
+                        <span id="doses-hint" class="hint">Enter the number of Creon capsules you took</span>
+                        <span id="doses-error" class="error"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="time">Time Taken</label>
-                        <input type="time" id="time" required>
+                        <label for="time" class="required">Time</label>
+                        <input 
+                            type="time" 
+                            id="time" 
+                            required
+                            aria-required="true"
+                            aria-describedby="time-error"
+                        >
+                        <span id="time-error" class="error"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="meal">Meal/Snack</label>
-                        <input type="text" id="meal" placeholder="e.g., Breakfast, Lunch, Snack" required>
+                        <label class="required">Meal Type</label>
+                        <div class="meal-type-options" role="radiogroup" aria-label="Meal Type">
+                            <label class="meal-type-radio">
+                                <input type="radio" name="mealType" value="Breakfast" required>
+                                <span class="meal-type-label">🌅 Breakfast</span>
+                            </label>
+                            <label class="meal-type-radio">
+                                <input type="radio" name="mealType" value="Lunch" required>
+                                <span class="meal-type-label">☀️ Lunch</span>
+                            </label>
+                            <label class="meal-type-radio">
+                                <input type="radio" name="mealType" value="Dinner" required>
+                                <span class="meal-type-label">🌙 Dinner</span>
+                            </label>
+                            <label class="meal-type-radio">
+                                <input type="radio" name="mealType" value="Snack" required>
+                                <span class="meal-type-label">🍎 Snack</span>
+                            </label>
+                        </div>
+                        <span id="mealType-error" class="error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meal" class="required">What did you eat?</label>
+                        <textarea 
+                            id="meal" 
+                            maxlength="500"
+                            required
+                            aria-required="true"
+                            aria-describedby="meal-hint meal-error meal-count"
+                        ></textarea>
+                        <span id="meal-hint" class="hint">Describe your meal or snack</span>
+                        <span id="meal-count" class="char-count">0 / 500</span>
+                        <span id="meal-error" class="error"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="symptoms">Symptoms (if any)</label>
-                        <textarea id="symptoms" placeholder="Describe any symptoms you're experiencing..."></textarea>
+                        <textarea 
+                            id="symptoms" 
+                            maxlength="500"
+                            aria-describedby="symptoms-hint symptoms-count"
+                        ></textarea>
+                        <span id="symptoms-hint" class="hint">Any digestive symptoms you're experiencing (optional)</span>
+                        <span id="symptoms-count" class="char-count">0 / 500</span>
                     </div>
 
-                    <button type="submit" class="btn">Save Entry</button>
+                    <button type="submit" class="btn" id="creonSubmitBtn">
+                        Log Creon Dose
+                    </button>
                 </form>
             </div>
         </div>
 
+        <!-- Log Stool Tab -->
         <div id="stool-tab" class="tab-content">
             <div class="card">
-                <form id="stool-form">
+                <h2 style="margin-bottom: 20px; color: #667eea;">Log Stool</h2>
+                <form id="stoolForm" onsubmit="logStool(event)">
                     <div class="form-group">
-                        <label for="stoolTime">Time</label>
-                        <input type="time" id="stoolTime" required>
+                        <label for="stoolTime" class="required">Time</label>
+                        <input 
+                            type="time" 
+                            id="stoolTime" 
+                            required
+                            aria-required="true"
+                            aria-describedby="stoolTime-error"
+                        >
+                        <span id="stoolTime-error" class="error"></span>
                     </div>
 
                     <div class="form-group">
-                        <label>Stool Quality (Bristol Stool Scale)</label>
-                        <div class="stool-options">
-                            <div class="stool-option-2" data-value="1">
-                                Type 1<br>Hard lumps
+                        <label class="required">Bristol Stool Type</label>
+                        <span class="hint">Select the type that best matches (1-7)</span>
+                        <div class="stool-options" id="stoolTypes" role="radiogroup" aria-label="Bristol Stool Type">
+                            <div class="stool-option" data-quality="1" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 1</strong><br>Separate hard lumps
                             </div>
-                            <div class="stool-option-2" data-value="2">
-                                Type 2<br>Lumpy
+                            <div class="stool-option" data-quality="2" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 2</strong><br>Lumpy and sausage-like
                             </div>
-                            <div class="stool-option-2" data-value="3">
-                                Type 3<br>Cracked
+                            <div class="stool-option" data-quality="3" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 3</strong><br>Sausage with cracks
                             </div>
-                            <div class="stool-option-2" data-value="4">
-                                Type 4<br>Smooth
+                            <div class="stool-option" data-quality="4" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 4</strong><br>Smooth and soft
                             </div>
-                            <div class="stool-option-2" data-value="5">
-                                Type 5<br>Soft blobs
+                            <div class="stool-option" data-quality="5" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 5</strong><br>Soft blobs
                             </div>
-                            <div class="stool-option-2" data-value="6">
-                                Type 6<br>Mushy
+                            <div class="stool-option" data-quality="6" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 6</strong><br>Mushy with edges
                             </div>
-                            <div class="stool-option-2" data-value="7">
-                                Type 7<br>Watery
+                            <div class="stool-option" data-quality="7" tabindex="0" role="radio" aria-checked="false">
+                                <strong>Type 7</strong><br>Liquid, no solids
+                            </div>
+                        </div>
+                        <span id="stoolType-error" class="error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Additional Properties</label>
+                        <div class="stool-options" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="stool-option-2" id="floating" data-property="floating" tabindex="0">
+                                Floating
+                            </div>
+                            <div class="stool-option-2" id="oily" data-property="oily" tabindex="0">
+                                Oily/Greasy
+                            </div>
+                            <div class="stool-option-2" id="mucus" data-property="mucus" tabindex="0">
+                                Contains Mucus
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="stoolNotes">Notes (optional)</label>
-                        <textarea id="stoolNotes" placeholder="Any additional notes about this bowel movement..."></textarea>
+                        <textarea 
+                            id="stoolNotes" 
+                            maxlength="500"
+                            aria-describedby="stoolNotes-hint stoolNotes-count"
+                        ></textarea>
+                        <span id="stoolNotes-hint" class="hint">Any additional observations</span>
+                        <span id="stoolNotes-count" class="char-count">0 / 500</span>
                     </div>
 
-                    <button type="submit" class="btn">Save Stool Entry</button>
+                    <button type="submit" class="btn" id="stoolSubmitBtn">
+                        Log Stool
+                    </button>
                 </form>
             </div>
         </div>
 
+        <!-- History Tab -->
         <div id="history-tab" class="tab-content">
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                    <h2 style="margin: 0;">Your Tracking History</h2>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button onclick="showExportSettings()" style="background: #667eea; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
-                            ⚙️ Auto-Export
-                        </button>
-                        <button onclick="exportData()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
-                            📥 Export Now
-                        </button>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #667eea; margin: 0;">Entry History</h2>
+                    <span id="entryCount" style="color: #666; font-size: 14px;"></span>
                 </div>
-                <div id="history-list"></div>
+                <div id="historyList"></div>
             </div>
         </div>
 
-        <!-- Auto-Export Settings Modal -->
-        <div id="export-settings-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px; overflow-y: auto;">
-            <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-                <h2 style="margin-top: 0; color: #667eea;">Monthly Auto-Export Settings</h2>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" id="auto-export-enabled" style="width: 24px; height: 24px; margin-right: 10px; cursor: pointer;">
-                        <span style="font-size: 16px; font-weight: 600;">Enable automatic monthly exports</span>
-                    </label>
-                    <p style="margin: 10px 0 0 34px; color: #666; font-size: 14px;">Automatically export your data on the last day of each month</p>
-                </div>
-
-                <div id="last-export-info" style="background: #f8f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Last export:</strong> <span id="last-export-date">Never</span></p>
-                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;"><strong>Next auto-export:</strong> <span id="next-export-date">-</span></p>
-                </div>
-
-                <div style="background: #fff7ed; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-                    <p style="margin: 0; font-size: 14px;"><strong>📋 How it works:</strong></p>
-                    <p style="margin: 8px 0 0 0; font-size: 14px;">When enabled, the app will prompt you to download your monthly data on the last day of each month. You can then send it securely to your doctor.</p>
-                </div>
-
-                <h3 style="color: #667eea; margin-top: 30px;">🔒 Securely Sending to Your Gastroenterologist</h3>
-                
-                <div style="margin-bottom: 15px;">
-                    <h4 style="margin-bottom: 8px; color: #333;">Option 1: Patient Portal (Most Secure)</h4>
-                    <p style="margin: 0; font-size: 14px; color: #666;">Most healthcare providers have secure patient portals where you can upload documents. This is the most secure method.</p>
-                    <ol style="margin: 8px 0 0 20px; font-size: 14px; color: #666;">
-                        <li>Log into your doctor's patient portal</li>
-                        <li>Look for "Upload Documents" or "Send Message"</li>
-                        <li>Attach your exported CSV file</li>
-                        <li>Add a note: "Monthly Creon tracking data for [Month Year]"</li>
-                    </ol>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <h4 style="margin-bottom: 8px; color: #333;">Option 2: Encrypted Email</h4>
-                    <p style="margin: 0; font-size: 14px; color: #666;">If your doctor accepts encrypted email:</p>
-                    <ol style="margin: 8px 0 0 20px; font-size: 14px; color: #666;">
-                        <li>Use ProtonMail, Tutanota, or your provider's secure email</li>
-                        <li>Attach the CSV file</li>
-                        <li>Subject: "Creon Tracking - [Your Name] - [Month Year]"</li>
-                        <li>Body: Brief summary of any notable symptoms or patterns</li>
-                    </ol>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <h4 style="margin-bottom: 8px; color: #333;">Option 3: Secure File Sharing</h4>
-                    <p style="margin: 0; font-size: 14px; color: #666;">Use HIPAA-compliant file sharing:</p>
-                    <ul style="margin: 8px 0 0 20px; font-size: 14px; color: #666;">
-                        <li><strong>Virtru:</strong> Email encryption service</li>
-                        <li><strong>Secure cloud:</strong> Google Drive/Dropbox (if provider approved)</li>
-                        <li>Set expiration dates on shared links</li>
-                        <li>Use password protection</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <h4 style="margin-bottom: 8px; color: #333;">Option 4: Bring to Appointment</h4>
-                    <p style="margin: 0; font-size: 14px; color: #666;">Simply bring the file on a USB drive or printed out to your next appointment.</p>
-                </div>
-
-                <div style="background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px;">
-                    <p style="margin: 0; font-size: 14px;"><strong>⚠️ Never send via:</strong></p>
-                    <ul style="margin: 8px 0 0 20px; font-size: 14px;">
-                        <li>Regular unsecured email</li>
-                        <li>Text message or SMS</li>
-                        <li>Social media messaging</li>
-                        <li>Public file sharing links without password</li>
-                    </ul>
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button onclick="saveExportSettings()" style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;">
-                        Save Settings
-                    </button>
-                    <button onclick="closeExportSettings()" style="flex: 1; background: #e5e7eb; color: #374151; border: none; padding: 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
+        <!-- Settings Tab -->
         <div id="settings-tab" class="tab-content">
             <div class="card">
-                <h2 style="margin-bottom: 20px;">Settings</h2>
+                <h2 style="margin-bottom: 20px; color: #667eea;">Settings & Data</h2>
                 
-                <div class="form-group">
-                    <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
-                        <input type="checkbox" id="autoExportToggle" style="width: auto; margin-right: 12px; width: 20px; height: 20px; cursor: pointer;">
-                        <span>Automatically export data at the end of each month</span>
-                    </label>
-                    <p style="margin: 10px 0 0 32px; font-size: 14px; color: #666;">
-                        When enabled, the app will automatically download a monthly report on the last day of each month. You can then share it with your healthcare provider.
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 10px; color: #333;">📤 Export Data</h3>
+                    <p style="color: #666; margin-bottom: 15px; line-height: 1.6;">
+                        Download all your tracking data as a CSV file. You can open this in Excel, Google Sheets, or share it with your doctor.
+                    </p>
+                    <button class="btn" onclick="exportData()">Export All Data (CSV)</button>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 10px; color: #333;">💾 Backup & Restore</h3>
+                    <p style="color: #666; margin-bottom: 15px; line-height: 1.6;">
+                        Create a backup file of all your data (includes more detail than CSV export). You can restore this backup later if needed.
+                    </p>
+                    <button class="btn" onclick="createBackup()">Create Backup File</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('restoreFile').click()" style="margin-top: 10px;">
+                        Restore from Backup
+                    </button>
+                    <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreBackup(this)">
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 10px; color: #333;">🔒 Privacy & Storage</h3>
+                    <p style="color: #666; margin-bottom: 10px; line-height: 1.6;">
+                        All your data is stored locally on your device. Nothing is sent to any server. You have complete control over your information.
+                    </p>
+                    <p style="color: #666; line-height: 1.6;">
+                        <strong>Storage used:</strong> <span id="storageSize">Calculating...</span>
                     </p>
                 </div>
 
-                <div style="margin-top: 30px; padding: 20px; background: #f8f9ff; border-radius: 10px; border-left: 4px solid #667eea;">
-                    <p style="margin: 0 0 10px 0; font-weight: 600; color: #667eea;">Last Export Check: <span id="lastExportCheck">Never</span></p>
-                    <p style="margin: 0; font-size: 14px; color: #666;">Next scheduled export: <span id="nextExport">Not scheduled</span></p>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 10px; color: #333;">⚙️ App Settings</h3>
+                    <button class="btn btn-secondary" onclick="resetInstallPrompt()">
+                        Reset Install Prompt
+                    </button>
+                    <p class="hint" style="margin-top: 10px;">
+                        This will show the "Install App" banner again if you previously dismissed it.
+                    </p>
                 </div>
 
-                <h3 style="margin-top: 40px; margin-bottom: 15px; color: #667eea;">📧 How to Securely Share Your Data with Your Doctor</h3>
-                
-                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 1: Email (Encrypted)</h4>
-                    <div style="padding-left: 20px;">
-                        <p style="margin: 0 0 10px 0;">1. Export your data (CSV file will download)</p>
-                        <p style="margin: 0 0 10px 0;">2. Use encrypted email services:</p>
-                        <ul style="margin: 10px 0; padding-left: 20px;">
-                            <li><strong>ProtonMail:</strong> End-to-end encrypted email</li>
-                            <li><strong>Gmail Confidential Mode:</strong> Set expiration and require passcode</li>
-                            <li><strong>Outlook Encrypt:</strong> Built-in encryption for Office 365</li>
-                        </ul>
-                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">⚠️ Avoid regular email without encryption as it contains sensitive health information</p>
-                    </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 10px; color: #333;">🗑️ Data Management</h3>
+                    <p style="color: #666; margin-bottom: 15px; line-height: 1.6;">
+                        <strong>⚠️ Warning:</strong> This will permanently delete all your logged entries. Make sure to export your data first if you want to keep it.
+                    </p>
+                    <button class="btn btn-danger" onclick="confirmClearAllData()">
+                        Clear All Data
+                    </button>
                 </div>
 
-                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 2: Patient Portal</h4>
-                    <div style="padding-left: 20px;">
-                        <p style="margin: 0 0 10px 0;">1. Export your data</p>
-                        <p style="margin: 0 0 10px 0;">2. Log into your healthcare provider's patient portal (MyChart, FollowMyHealth, etc.)</p>
-                        <p style="margin: 0 0 10px 0;">3. Upload the CSV file to "Messages" or "Documents" section</p>
-                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #10b981;">✅ Most secure option - HIPAA compliant</p>
-                    </div>
-                </div>
-
-                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 3: Secure File Sharing</h4>
-                    <div style="padding-left: 20px;">
-                        <p style="margin: 0 0 10px 0;">1. Export your data</p>
-                        <p style="margin: 0 0 10px 0;">2. Upload to encrypted cloud storage:</p>
-                        <ul style="margin: 10px 0; padding-left: 20px;">
-                            <li><strong>Proton Drive:</strong> End-to-end encrypted, share with password</li>
-                            <li><strong>Tresorit:</strong> Healthcare-grade encryption</li>
-                            <li><strong>OneDrive/Google Drive:</strong> Use password-protected sharing links</li>
-                        </ul>
-                        <p style="margin: 0 0 10px 0;">3. Share the secure link and password separately with your doctor</p>
-                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">💡 Send password via text/phone, never in the same email as the link</p>
-                    </div>
-                </div>
-
-                <div style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 15px 0; color: #764ba2;">Option 4: Physical Copy</h4>
-                    <div style="padding-left: 20px;">
-                        <p style="margin: 0 0 10px 0;">1. Export your data</p>
-                        <p style="margin: 0 0 10px 0;">2. Open the CSV file in Excel or Google Sheets</p>
-                        <p style="margin: 0 0 10px 0;">3. Print and bring to your appointment</p>
-                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">📄 Good for in-person visits, no digital security concerns</p>
-                    </div>
-                </div>
-
-                <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 15px; margin-top: 20px;">
-                    <h4 style="margin: 0 0 10px 0; color: #856404;">🔒 Security Best Practices</h4>
-                    <ul style="margin: 0; padding-left: 20px;">
-                        <li>Never share unencrypted health data via regular email or text</li>
-                        <li>Use unique, strong passwords for shared links</li>
-                        <li>Set expiration dates on shared files (7-14 days)</li>
-                        <li>Delete the file from shared locations after your doctor has received it</li>
-                        <li>Verify your doctor's email address before sending</li>
-                    </ul>
-                </div>
-
-                <div style="background: #d1ecf1; border: 2px solid #17a2b8; border-radius: 10px; padding: 15px; margin-top: 20px;">
-                    <h4 style="margin: 0 0 10px 0; color: #0c5460;">💡 Pro Tips</h4>
-                    <ul style="margin: 0; padding-left: 20px;">
-                        <li>Export data 2-3 days before your appointment</li>
-                        <li>Name files clearly: "John-Doe-Creon-Tracking-Jan-2026.csv"</li>
-                        <li>Include a date range in your message to your doctor</li>
-                        <li>Keep copies of all exports in a secure backup</li>
-                        <li>Ask your doctor which method they prefer</li>
-                    </ul>
+                <div style="padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                    <p style="color: #666; font-size: 14px; margin-bottom: 5px;">
+                        <strong>Version:</strong> 1.2.3 Enhanced
+                    </p>
+                    <p style="color: #666; font-size: 14px;">
+                        <strong>Features:</strong> Meal type selection, Form validation, Undo delete, Auto backup reminders, Improved UI
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let selectedStool = null;
-        let selectedStool2 = null;
+        // Configuration
+        const CONFIG = {
+            MAX_DOSES: 20,
+            MAX_MEAL_LENGTH: 500,
+            MAX_NOTES_LENGTH: 500,
+            BACKUP_REMINDER_DAYS: 30,
+            UNDO_TIMEOUT: 5000
+        };
 
-        // Set current time as default
-        document.getElementById('time').value = new Date().toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        // Storage keys
+        const STORAGE_KEYS = {
+            CREON_PREFIX: 'creon:',
+            STOOL_PREFIX: 'stool:',
+            LAST_BACKUP: 'lastBackupDate',
+            INSTALL_PROMPT: 'installPromptShown',
+            DELETED_ENTRY: 'deleted_entry_'
+        };
 
-        // Load settings
-        function loadSettings() {
-            const autoExport = localStorage.getItem('autoExportEnabled') === 'true';
-            document.getElementById('autoExportToggle').checked = autoExport;
-            
-            const lastCheck = localStorage.getItem('lastExportCheck');
-            if (lastCheck) {
-                document.getElementById('lastExportCheck').textContent = new Date(lastCheck).toLocaleDateString();
-            }
-            
-            updateNextExportDate();
+        // Utility Functions
+        function sanitizeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        // Save auto-export setting
-        document.getElementById('autoExportToggle').addEventListener('change', function() {
-            localStorage.setItem('autoExportEnabled', this.checked);
-            updateNextExportDate();
-            if (this.checked) {
-                alert('Monthly auto-export enabled! The app will automatically download your data on the last day of each month.');
-            } else {
-                alert('Monthly auto-export disabled.');
-            }
-        });
-
-        // Update next export date display
-        function updateNextExportDate() {
-            const autoExport = localStorage.getItem('autoExportEnabled') === 'true';
-            const nextExportSpan = document.getElementById('nextExport');
+        function showToast(message, type = 'success', options = {}) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
             
-            if (autoExport) {
-                const today = new Date();
-                const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                nextExportSpan.textContent = lastDayOfMonth.toLocaleDateString();
-                nextExportSpan.style.color = '#10b981';
-                nextExportSpan.style.fontWeight = '600';
-            } else {
-                nextExportSpan.textContent = 'Not scheduled';
-                nextExportSpan.style.color = '#666';
-                nextExportSpan.style.fontWeight = 'normal';
-            }
-        }
-
-        // Check if auto-export should run
-        function checkAutoExport() {
-            const autoExport = localStorage.getItem('autoExportEnabled') === 'true';
-            if (!autoExport) return;
-
-            const today = new Date();
-            const lastCheck = localStorage.getItem('lastExportCheck');
-            
-            // Check if it's the last day of the month
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const isLastDayOfMonth = tomorrow.getMonth() !== today.getMonth();
-            
-            // Check if we haven't exported today
-            const lastCheckDate = lastCheck ? new Date(lastCheck).toDateString() : null;
-            const todayDate = today.toDateString();
-            
-            if (isLastDayOfMonth && lastCheckDate !== todayDate) {
-                // Perform auto-export
-                exportData(true);
-                localStorage.setItem('lastExportCheck', today.toISOString());
-                document.getElementById('lastExportCheck').textContent = today.toLocaleDateString();
-            }
-        }
-
-        // Run auto-export check on page load
-        window.addEventListener('load', function() {
-            loadSettings();
-            checkAutoExport();
-        });
-
-        // Stool quality selection for stool form
-        document.querySelectorAll('.stool-option-2').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.stool-option-2').forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedStool2 = this.dataset.value;
-            });
-        });
-
-        // Creon form submission
-        document.getElementById('tracking-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const entry = {
-                id: Date.now(),
-                type: 'creon',
-                date: new Date().toISOString().split('T')[0],
-                time: document.getElementById('time').value,
-                doses: document.getElementById('doses').value,
-                meal: document.getElementById('meal').value,
-                symptoms: document.getElementById('symptoms').value,
-                timestamp: new Date().toISOString()
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠',
+                info: 'ℹ'
             };
+            
+            let actionsHTML = '';
+            if (options.actions) {
+                actionsHTML = '<div class="toast-actions">';
+                options.actions.forEach(action => {
+                    actionsHTML += `<button class="toast-btn" onclick="${action.onclick}">${action.label}</button>`;
+                });
+                actionsHTML += '</div>';
+            }
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || 'ℹ'}</div>
+                <div class="toast-content">
+                    ${options.title ? `<div class="toast-title">${options.title}</div>` : ''}
+                    <div class="toast-message">${message}</div>
+                    ${actionsHTML}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            if (!options.persist) {
+                setTimeout(() => {
+                    toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }, options.duration || 4000);
+            }
+            
+            return toast;
+        }
 
+        function showModal(options) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            const iconMap = {
+                warning: '⚠️',
+                danger: '🗑️',
+                info: 'ℹ️',
+                success: '✓'
+            };
+            
+            overlay.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <div class="modal-icon">${options.icon || iconMap[options.type] || 'ℹ️'}</div>
+                        <div class="modal-title">${options.title}</div>
+                    </div>
+                    <div class="modal-body">${options.message}</div>
+                    <div class="modal-actions">
+                        ${options.cancelText ? `<button class="modal-btn modal-btn-cancel" onclick="this.closest('.modal-overlay').remove()">${options.cancelText}</button>` : ''}
+                        <button class="modal-btn ${options.type === 'danger' ? 'modal-btn-danger' : 'modal-btn-confirm'}" onclick="this.closest('.modal-overlay').remove(); (${options.onConfirm.toString()})()">
+                            ${options.confirmText || 'OK'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay && options.dismissible !== false) {
+                    overlay.remove();
+                }
+            });
+            
+            document.body.appendChild(overlay);
+        }
+
+        function showLoading(message = 'Processing...') {
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.id = 'loadingOverlay';
+            overlay.innerHTML = `
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <div class="loading-text">${message}</div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.remove();
+        }
+
+        // Form Validation
+        function setupFormValidation() {
+            // Character counters
+            setupCharCounter('meal', 'meal-count');
+            setupCharCounter('symptoms', 'symptoms-count');
+            setupCharCounter('stoolNotes', 'stoolNotes-count');
+            
+            // Real-time validation for doses
+            const dosesInput = document.getElementById('doses');
+            dosesInput.addEventListener('input', function() {
+                validateDoses(this);
+            });
+            
+            // Real-time validation for meal
+            const mealInput = document.getElementById('meal');
+            mealInput.addEventListener('blur', function() {
+                validateMeal(this);
+            });
+        }
+
+        function setupCharCounter(inputId, counterId) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            
+            if (!input || !counter) return;
+            
+            input.addEventListener('input', function() {
+                const count = this.value.length;
+                const max = this.getAttribute('maxlength');
+                counter.textContent = `${count} / ${max}`;
+                
+                if (count > max * 0.9) {
+                    counter.classList.add('warning');
+                } else {
+                    counter.classList.remove('warning');
+                }
+                
+                if (count >= max) {
+                    counter.classList.add('error');
+                } else {
+                    counter.classList.remove('error');
+                }
+            });
+        }
+
+        function validateDoses(input) {
+            const value = parseInt(input.value);
+            const error = document.getElementById('doses-error');
+            
+            if (!value || value < 1) {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                error.textContent = 'Please enter at least 1 dose';
+                error.classList.add('show');
+                return false;
+            } else if (value > CONFIG.MAX_DOSES) {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                error.textContent = `Maximum ${CONFIG.MAX_DOSES} doses allowed`;
+                error.classList.add('show');
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+
+        function validateMeal(input) {
+            const value = input.value.trim();
+            const error = document.getElementById('meal-error');
+            
+            if (!value) {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                error.textContent = 'Please describe what you ate';
+                error.classList.add('show');
+                return false;
+            } else if (value.length < 3) {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                error.textContent = 'Please provide more detail (at least 3 characters)';
+                error.classList.add('show');
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+
+        function validateStoolType() {
+            const selected = document.querySelector('.stool-option.selected');
+            const error = document.getElementById('stoolType-error');
+            
+            if (!selected) {
+                error.textContent = 'Please select a stool type';
+                error.classList.add('show');
+                return false;
+            }
+            
+            error.classList.remove('show');
+            return true;
+        }
+
+        // Log Creon with validation
+        function logCreon(event) {
+            event.preventDefault();
+            
+            const doses = document.getElementById('doses').value;
+            const time = document.getElementById('time').value;
+            const mealType = document.querySelector('input[name="mealType"]:checked');
+            const meal = document.getElementById('meal').value.trim();
+            const symptoms = document.getElementById('symptoms').value.trim();
+            
+            // Validate
+            if (!validateDoses(document.getElementById('doses'))) return;
+            
+            if (!mealType) {
+                const error = document.getElementById('mealType-error');
+                error.textContent = 'Please select a meal type';
+                error.classList.add('show');
+                showToast('Please select a meal type', 'error');
+                return;
+            } else {
+                const error = document.getElementById('mealType-error');
+                error.classList.remove('show');
+            }
+            
+            if (!validateMeal(document.getElementById('meal'))) return;
+            
+            if (!time) {
+                showToast('Please select a time', 'error');
+                return;
+            }
+            
+            // Confirmation for high doses
+            if (parseInt(doses) > 10) {
+                showModal({
+                    title: 'High Dose Confirmation',
+                    message: `You entered ${doses} doses. This is higher than typical. Is this correct?`,
+                    type: 'warning',
+                    confirmText: 'Yes, Log It',
+                    cancelText: 'Cancel',
+                    onConfirm: () => saveCreonEntry(doses, time, mealType.value, meal, symptoms)
+                });
+                return;
+            }
+            
+            saveCreonEntry(doses, time, mealType.value, meal, symptoms);
+        }
+
+        function saveCreonEntry(doses, time, mealType, meal, symptoms) {
+            const timestamp = new Date().toISOString();
+            const id = `creon:${timestamp}`;
+            
+            const entry = {
+                id,
+                type: 'creon',
+                doses: parseInt(doses),
+                time,
+                mealType,
+                meal: sanitizeHTML(meal),
+                symptoms: sanitizeHTML(symptoms),
+                date: new Date().toLocaleDateString(),
+                timestamp
+            };
+            
             try {
-                localStorage.setItem(`creon:${entry.id}`, JSON.stringify(entry));
+                localStorage.setItem(id, JSON.stringify(entry));
                 
                 // Reset form
-                this.reset();
+                document.getElementById('creonForm').reset();
+                document.getElementById('doses').classList.remove('valid', 'invalid');
+                document.getElementById('meal').classList.remove('valid', 'invalid');
+                
+                // Set time to now
                 document.getElementById('time').value = new Date().toLocaleTimeString('en-US', {
                     hour12: false,
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-
-                alert('Creon entry saved successfully!');
-                switchTab('history');
+                
+                showToast('Creon dose logged successfully!', 'success', {
+                    title: 'Entry Saved'
+                });
+                
+                checkBackupReminder();
             } catch (error) {
                 console.error('Error saving entry:', error);
-                alert('Error saving entry. Please try again.');
+                showToast('Failed to save entry. Please try again.', 'error');
             }
-        });
+        }
 
-        // Stool form submission
-        document.getElementById('stool-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            if (!selectedStool2) {
-                alert('Please select a stool quality type');
+        // Log Stool with validation
+        function logStool(event) {
+            event.preventDefault();
+            
+            if (!validateStoolType()) {
+                showToast('Please select a stool type', 'error');
                 return;
             }
-
-            const entry = {
-                id: Date.now(),
-                type: 'stool',
-                date: new Date().toISOString().split('T')[0],
-                time: document.getElementById('stoolTime').value,
-                quality: selectedStool2,
-                notes: document.getElementById('stoolNotes').value,
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                localStorage.setItem(`stool:${entry.id}`, JSON.stringify(entry));
-                
-                // Reset form
-                this.reset();
-                document.querySelectorAll('.stool-option-2').forEach(opt => opt.classList.remove('selected'));
-                selectedStool2 = null;
-
-                alert('Stool entry saved successfully!');
-                switchTab('history');
-            } catch (error) {
-                console.error('Error saving entry:', error);
-                alert('Error saving entry. Please try again.');
+            
+            const time = document.getElementById('stoolTime').value;
+            if (!time) {
+                showToast('Please select a time', 'error');
+                return;
             }
-        });
-
-        async function loadHistory() {
-            const historyList = document.getElementById('history-list');
+            
+            const selectedType = document.querySelector('.stool-option.selected');
+            const quality = selectedType.dataset.quality;
+            
+            const properties = [];
+            document.querySelectorAll('.stool-option-2.selected').forEach(prop => {
+                properties.push(prop.dataset.property);
+            });
+            
+            const notes = document.getElementById('stoolNotes').value.trim();
+            
+            const timestamp = new Date().toISOString();
+            const id = `stool:${timestamp}`;
+            
+            const entry = {
+                id,
+                type: 'stool',
+                quality,
+                properties,
+                time,
+                notes: sanitizeHTML(notes),
+                date: new Date().toLocaleDateString(),
+                timestamp
+            };
             
             try {
-                const entries = [];
+                localStorage.setItem(id, JSON.stringify(entry));
                 
-                // Load all entries from localStorage
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('creon:') || key.startsWith('stool:')) {
-                        try {
-                            const data = localStorage.getItem(key);
-                            if (data) {
-                                entries.push(JSON.parse(data));
-                            }
-                        } catch (error) {
-                            console.error(`Error loading entry ${key}:`, error);
-                        }
-                    }
-                }
-
-                if (entries.length === 0) {
-                    historyList.innerHTML = '<div class="empty-state">No entries yet. Start tracking your medication and bowel movements!</div>';
-                    return;
-                }
-
-                entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-                historyList.innerHTML = entries.map(entry => {
-                    if (entry.type === 'creon') {
-                        return `
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <div>
-                                        <span class="type-badge">💊 CREON</span>
-                                        <div style="margin-top: 8px;">
-                                            <span class="history-date">${entry.date}</span>
-                                            <span class="history-time"> • ${entry.time}</span>
-                                        </div>
-                                    </div>
-                                    <button class="delete-btn" onclick="deleteEntry('creon:${entry.id}')">Delete</button>
-                                </div>
-                                <div class="history-details">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Doses</div>
-                                        <div class="detail-value">${entry.doses}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="detail-label">Meal</div>
-                                        <div class="detail-value">${entry.meal}</div>
-                                    </div>
-                                    ${entry.symptoms ? `
-                                    <div class="detail-item" style="grid-column: 1 / -1;">
-                                        <div class="detail-label">Symptoms</div>
-                                        <div class="detail-value">${entry.symptoms}</div>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        return `
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <div>
-                                        <span class="type-badge stool">🚽 STOOL</span>
-                                        <div style="margin-top: 8px;">
-                                            <span class="history-date">${entry.date}</span>
-                                            <span class="history-time"> • ${entry.time}</span>
-                                        </div>
-                                    </div>
-                                    <button class="delete-btn" onclick="deleteEntry('stool:${entry.id}')">Delete</button>
-                                </div>
-                                <div class="history-details">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Bristol Type</div>
-                                        <div class="detail-value">Type ${entry.quality}</div>
-                                    </div>
-                                    ${entry.notes ? `
-                                    <div class="detail-item" style="grid-column: 1 / -1;">
-                                        <div class="detail-label">Notes</div>
-                                        <div class="detail-value">${entry.notes}</div>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }
-                }).join('');
+                // Reset form
+                document.getElementById('stoolForm').reset();
+                document.querySelectorAll('.stool-option.selected, .stool-option-2.selected').forEach(el => {
+                    el.classList.remove('selected');
+                    el.setAttribute('aria-checked', 'false');
+                });
+                
+                // Set time to now
+                document.getElementById('stoolTime').value = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                showToast('Stool entry logged successfully!', 'success', {
+                    title: 'Entry Saved'
+                });
+                
+                checkBackupReminder();
             } catch (error) {
-                console.error('Error loading history:', error);
-                historyList.innerHTML = '<div class="empty-state">Error loading history. Please refresh the page.</div>';
+                console.error('Error saving entry:', error);
+                showToast('Failed to save entry. Please try again.', 'error');
             }
         }
 
-        async function deleteEntry(key) {
-            if (confirm('Are you sure you want to delete this entry?')) {
-                try {
-                    localStorage.removeItem(key);
-                    loadHistory();
-                } catch (error) {
-                    console.error('Error deleting entry:', error);
-                    alert('Error deleting entry. Please try again.');
-                }
-            }
-        }
-
-        async function exportData(isAutoExport = false) {
-            try {
-                const entries = [];
+        // Stool type selection
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stool-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.stool-option').forEach(o => {
+                        o.classList.remove('selected');
+                        o.setAttribute('aria-checked', 'false');
+                    });
+                    this.classList.add('selected');
+                    this.setAttribute('aria-checked', 'true');
+                    
+                    const error = document.getElementById('stoolType-error');
+                    if (error) error.classList.remove('show');
+                });
                 
-                // Load all entries from localStorage
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('creon:') || key.startsWith('stool:')) {
-                        try {
-                            const data = localStorage.getItem(key);
-                            if (data) {
-                                entries.push(JSON.parse(data));
-                            }
-                        } catch (error) {
-                            console.error(`Error loading entry ${key}:`, error);
-                        }
-                    }
-                }
-
-                if (entries.length === 0) {
-                    if (!isAutoExport) {
-                        alert('No data to export yet!');
-                    }
-                    return;
-                }
-
-                // Sort by date/time
-                entries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-                // Create CSV content
-                let csv = 'Type,Date,Time,Doses,Meal,Symptoms,Stool Quality,Stool Notes\n';
-                
-                entries.forEach(entry => {
-                    if (entry.type === 'creon') {
-                        csv += `Creon,"${entry.date}","${entry.time}","${entry.doses}","${entry.meal}","${entry.symptoms || ''}","",""\n`;
-                    } else {
-                        csv += `Stool,"${entry.date}","${entry.time}","","","","Type ${entry.quality}","${entry.notes || ''}"\n`;
+                // Keyboard support
+                option.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
                     }
                 });
-
-                // Create download with month/year in filename
-                const now = new Date();
-                const monthYear = `${now.toLocaleString('default', { month: 'short' })}-${now.getFullYear()}`;
-                const filename = `creon-tracker-${monthYear}-export.csv`;
+            });
+            
+            document.querySelectorAll('.stool-option-2').forEach(option => {
+                option.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
                 
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
+                option.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+            
+            setupFormValidation();
+            updateStorageSize();
+            checkBackupReminder();
+        });
 
-                if (isAutoExport) {
-                    alert(`📅 Monthly Report Ready!\n\nYour ${monthYear} data has been automatically exported.\n\nCheck your Downloads folder for: ${filename}\n\nSee the Settings tab for instructions on securely sharing with your doctor.`);
-                } else {
-                    alert('Data exported! The file has been downloaded. Check the Settings tab for instructions on securely sharing with your doctor.');
+        // Delete with undo
+        function deleteEntry(id) {
+            const entry = JSON.parse(localStorage.getItem(id));
+            const entryType = entry.type === 'creon' ? 'Creon dose' : 'Stool entry';
+            const entryDate = new Date(entry.timestamp).toLocaleString();
+            
+            showModal({
+                title: 'Delete Entry?',
+                message: `Are you sure you want to delete this ${entryType} from ${entryDate}?\n\nYou can undo this action for a few seconds.`,
+                type: 'danger',
+                confirmText: 'Delete',
+                cancelText: 'Cancel',
+                onConfirm: () => performDelete(id, entry)
+            });
+        }
+
+        function performDelete(id, entry) {
+            // Store in session for undo
+            sessionStorage.setItem(STORAGE_KEYS.DELETED_ENTRY + id, JSON.stringify(entry));
+            
+            // Remove from localStorage
+            localStorage.removeItem(id);
+            
+            // Reload history
+            loadHistory();
+            
+            // Show undo toast
+            const toast = showToast('Entry deleted', 'info', {
+                persist: true,
+                actions: [
+                    {
+                        label: 'Undo',
+                        onclick: `undoDelete('${id}'); this.closest('.toast').remove();`
+                    }
+                ]
+            });
+            
+            // Auto-remove undo option after timeout
+            setTimeout(() => {
+                sessionStorage.removeItem(STORAGE_KEYS.DELETED_ENTRY + id);
+                toast.remove();
+            }, CONFIG.UNDO_TIMEOUT);
+        }
+
+        function undoDelete(id) {
+            const entryData = sessionStorage.getItem(STORAGE_KEYS.DELETED_ENTRY + id);
+            
+            if (entryData) {
+                localStorage.setItem(id, entryData);
+                sessionStorage.removeItem(STORAGE_KEYS.DELETED_ENTRY + id);
+                loadHistory();
+                showToast('Entry restored', 'success');
+            }
+        }
+
+        // Load History
+        function loadHistory() {
+            const entries = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(STORAGE_KEYS.CREON_PREFIX) || key.startsWith(STORAGE_KEYS.STOOL_PREFIX)) {
+                    try {
+                        entries.push(JSON.parse(localStorage.getItem(key)));
+                    } catch (error) {
+                        console.error(`Error loading ${key}:`, error);
+                    }
                 }
-            } catch (error) {
-                console.error('Error exporting data:', error);
-                if (!isAutoExport) {
-                    alert('Error exporting data. Please try again.');
+            }
+            
+            entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const historyList = document.getElementById('historyList');
+            const entryCount = document.getElementById('entryCount');
+            
+            if (entries.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No entries yet. Start logging your medication and symptoms above!</p>';
+                entryCount.textContent = '';
+                return;
+            }
+            
+            entryCount.textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+            
+            let html = '';
+            
+            entries.forEach(entry => {
+                const badgeClass = entry.type === 'creon' ? 'badge-creon' : 'badge-stool';
+                const badgeText = entry.type === 'creon' ? '💊 Creon' : '💩 Stool';
+                
+                html += `
+                    <div class="history-item">
+                        <div class="badge ${badgeClass}">${badgeText}</div>
+                        <div class="history-header">
+                            <div>
+                                <div class="history-date">${entry.date}</div>
+                                <div class="history-time">${entry.time}</div>
+                            </div>
+                            <button class="delete-btn" onclick="deleteEntry('${entry.id}')" aria-label="Delete this entry">
+                                Delete
+                            </button>
+                        </div>
+                        <div class="history-details">
+                `;
+                
+                if (entry.type === 'creon') {
+                    html += `
+                        <div class="detail-item">
+                            <div class="detail-label">Meal Type</div>
+                            <div class="detail-value">${entry.mealType || 'Not specified'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Doses</div>
+                            <div class="detail-value">${entry.doses} capsule${entry.doses > 1 ? 's' : ''}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Meal</div>
+                            <div class="detail-value">${entry.meal}</div>
+                        </div>
+                    `;
+                    if (entry.symptoms) {
+                        html += `
+                            <div class="detail-item">
+                                <div class="detail-label">Symptoms</div>
+                                <div class="detail-value">${entry.symptoms}</div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    html += `
+                        <div class="detail-item">
+                            <div class="detail-label">Type</div>
+                            <div class="detail-value">Type ${entry.quality}</div>
+                        </div>
+                    `;
+                    if (entry.properties && entry.properties.length > 0) {
+                        html += `
+                            <div class="detail-item">
+                                <div class="detail-label">Properties</div>
+                                <div class="detail-value">${entry.properties.join(', ')}</div>
+                            </div>
+                        `;
+                    }
+                    if (entry.notes) {
+                        html += `
+                            <div class="detail-item">
+                                <div class="detail-label">Notes</div>
+                                <div class="detail-value">${entry.notes}</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            historyList.innerHTML = html;
+        }
+
+        // Export Data
+        function exportData() {
+            showLoading('Preparing export...');
+            
+            setTimeout(() => {
+                try {
+                    const entries = [];
+                    
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.startsWith(STORAGE_KEYS.CREON_PREFIX) || key.startsWith(STORAGE_KEYS.STOOL_PREFIX)) {
+                            try {
+                                entries.push(JSON.parse(localStorage.getItem(key)));
+                            } catch (error) {
+                                console.error(`Error loading ${key}:`, error);
+                            }
+                        }
+                    }
+                    
+                    if (entries.length === 0) {
+                        hideLoading();
+                        showToast('No data to export yet!', 'info');
+                        return;
+                    }
+                    
+                    entries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                    
+                    let csv = 'Type,Date,Time,Meal Type,Doses,Meal,Symptoms,Stool Quality,Stool Properties,Stool Notes\n';
+                    
+                    entries.forEach(entry => {
+                        if (entry.type === 'creon') {
+                            csv += `Creon,"${entry.date}","${entry.time}","${entry.mealType || 'Not specified'}","${entry.doses}","${entry.meal}","${entry.symptoms || ''}","","",""\n`;
+                        } else {
+                            const properties = entry.properties ? entry.properties.join('; ') : '';
+                            csv += `Stool,"${entry.date}","${entry.time}","","","","","Type ${entry.quality}","${properties}","${entry.notes || ''}"\n`;
+                        }
+                    });
+                    
+                    const now = new Date();
+                    const monthYear = `${now.toLocaleString('default', { month: 'short' })}-${now.getFullYear()}`;
+                    const filename = `creon-tracker-${monthYear}-export.csv`;
+                    
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    hideLoading();
+                    showToast(`Data exported successfully!`, 'success', {
+                        title: 'Export Complete',
+                        duration: 5000
+                    });
+                    
+                    localStorage.setItem(STORAGE_KEYS.LAST_BACKUP, new Date().toISOString());
+                } catch (error) {
+                    console.error('Export error:', error);
+                    hideLoading();
+                    showToast('Failed to export data. Please try again.', 'error');
+                }
+            }, 500);
+        }
+
+        // Backup & Restore
+        function createBackup() {
+            showLoading('Creating backup...');
+            
+            setTimeout(() => {
+                try {
+                    const backup = {
+                        version: '1.2.3',
+                        created: new Date().toISOString(),
+                        entries: []
+                    };
+                    
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.startsWith(STORAGE_KEYS.CREON_PREFIX) || key.startsWith(STORAGE_KEYS.STOOL_PREFIX)) {
+                            backup.entries.push(JSON.parse(localStorage.getItem(key)));
+                        }
+                    }
+                    
+                    if (backup.entries.length === 0) {
+                        hideLoading();
+                        showToast('No data to backup yet!', 'info');
+                        return;
+                    }
+                    
+                    const json = JSON.stringify(backup, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const timestamp = new Date().toISOString().split('T')[0];
+                    a.href = url;
+                    a.download = `creon-tracker-backup-${timestamp}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    hideLoading();
+                    showToast('Backup created successfully!', 'success', {
+                        title: `${backup.entries.length} entries backed up`
+                    });
+                    
+                    localStorage.setItem(STORAGE_KEYS.LAST_BACKUP, new Date().toISOString());
+                } catch (error) {
+                    console.error('Backup error:', error);
+                    hideLoading();
+                    showToast('Failed to create backup. Please try again.', 'error');
+                }
+            }, 500);
+        }
+
+        function restoreBackup(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (!file.name.endsWith('.json')) {
+                showToast('Please select a valid backup file (.json)', 'error');
+                return;
+            }
+            
+            showModal({
+                title: 'Restore Backup?',
+                message: 'This will replace all your current data with the backup file. Your current data will be lost unless you export it first.\n\nAre you sure you want to continue?',
+                type: 'warning',
+                confirmText: 'Yes, Restore',
+                cancelText: 'Cancel',
+                onConfirm: () => performRestore(file)
+            });
+        }
+
+        function performRestore(file) {
+            showLoading('Restoring backup...');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    if (!backup.version || !backup.entries) {
+                        throw new Error('Invalid backup file format');
+                    }
+                    
+                    // Clear existing entries
+                    for (let i = localStorage.length - 1; i >= 0; i--) {
+                        const key = localStorage.key(i);
+                        if (key.startsWith(STORAGE_KEYS.CREON_PREFIX) || key.startsWith(STORAGE_KEYS.STOOL_PREFIX)) {
+                            localStorage.removeItem(key);
+                        }
+                    }
+                    
+                    // Restore entries
+                    backup.entries.forEach(entry => {
+                        localStorage.setItem(entry.id, JSON.stringify(entry));
+                    });
+                    
+                    hideLoading();
+                    showToast(`Restored ${backup.entries.length} entries successfully!`, 'success', {
+                        title: 'Restore Complete'
+                    });
+                    
+                    // Reload history if on that tab
+                    if (document.getElementById('history-tab').classList.contains('active')) {
+                        loadHistory();
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    hideLoading();
+                    showToast('Failed to restore backup. File may be corrupted.', 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                hideLoading();
+                showToast('Failed to read backup file.', 'error');
+            };
+            
+            reader.readAsText(file);
+            
+            // Reset file input
+            input.value = '';
+        }
+
+        // Backup Reminder
+        function checkBackupReminder() {
+            const lastBackup = localStorage.getItem(STORAGE_KEYS.LAST_BACKUP);
+            const existingReminder = document.querySelector('.backup-reminder');
+            
+            if (existingReminder) return; // Already showing
+            
+            if (!lastBackup) return; // First time user
+            
+            const daysSinceBackup = Math.floor((new Date() - new Date(lastBackup)) / (1000 * 60 * 60 * 24));
+            
+            if (daysSinceBackup >= CONFIG.BACKUP_REMINDER_DAYS) {
+                const reminder = document.createElement('div');
+                reminder.className = 'backup-reminder';
+                reminder.innerHTML = `
+                    <div class="backup-reminder-icon">📅</div>
+                    <div class="backup-reminder-content">
+                        <div class="backup-reminder-title">Time to Backup!</div>
+                        <div class="backup-reminder-text">
+                            It's been ${daysSinceBackup} days since your last backup. 
+                            Remember to save your data!
+                        </div>
+                        <div class="backup-reminder-actions">
+                            <button class="backup-reminder-btn" onclick="createBackup(); this.closest('.backup-reminder').remove();">
+                                Backup Now
+                            </button>
+                            <button class="backup-reminder-btn" onclick="this.closest('.backup-reminder').remove();">
+                                Remind Later
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                const container = document.querySelector('.container');
+                container.insertBefore(reminder, container.firstChild.nextSibling);
+            }
+        }
+
+        // Storage Size
+        function updateStorageSize() {
+            let size = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    size += localStorage[key].length + key.length;
+                }
+            }
+            
+            const sizeKB = (size / 1024).toFixed(2);
+            const sizeMB = (size / 1024 / 1024).toFixed(2);
+            
+            const sizeElement = document.getElementById('storageSize');
+            if (sizeElement) {
+                if (size < 1024 * 1024) {
+                    sizeElement.textContent = `${sizeKB} KB`;
+                } else {
+                    sizeElement.textContent = `${sizeMB} MB`;
                 }
             }
         }
 
+        // Clear All Data
+        function confirmClearAllData() {
+            showModal({
+                title: 'Delete All Data?',
+                message: '⚠️ This will permanently delete ALL your logged entries. This action cannot be undone!\n\nMake sure you have exported your data if you want to keep it.',
+                type: 'danger',
+                confirmText: 'Yes, Delete Everything',
+                cancelText: 'Cancel',
+                onConfirm: clearAllData
+            });
+        }
+
+        function clearAllData() {
+            showLoading('Clearing data...');
+            
+            setTimeout(() => {
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith(STORAGE_KEYS.CREON_PREFIX) || key.startsWith(STORAGE_KEYS.STOOL_PREFIX)) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                
+                hideLoading();
+                showToast('All data cleared successfully', 'success');
+                loadHistory();
+                updateStorageSize();
+            }, 500);
+        }
+
+        function resetInstallPrompt() {
+            localStorage.removeItem(STORAGE_KEYS.INSTALL_PROMPT);
+            showToast('Install prompt reset! Reload the page to see it again.', 'success');
+        }
+
+        // Tab Switching
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -955,10 +1932,14 @@
             if (tab === 'log') {
                 document.querySelectorAll('.tab')[0].classList.add('active');
                 document.getElementById('log-tab').classList.add('active');
+                document.getElementById('time').value = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
             } else if (tab === 'stool') {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('stool-tab').classList.add('active');
-                // Set current time for stool form
                 document.getElementById('stoolTime').value = new Date().toLocaleTimeString('en-US', {
                     hour12: false,
                     hour: '2-digit',
@@ -971,32 +1952,48 @@
             } else if (tab === 'settings') {
                 document.querySelectorAll('.tab')[3].classList.add('active');
                 document.getElementById('settings-tab').classList.add('active');
-                loadSettings();
+                updateStorageSize();
             }
         }
 
-        // Load history on page load
-        if (document.getElementById('history-tab').classList.contains('active')) {
-            loadHistory();
-        }
+        // Initialize
+        window.addEventListener('load', () => {
+            // Set initial time
+            document.getElementById('time').value = new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Handle hash navigation
+            const hash = window.location.hash.substring(1);
+            if (hash === 'log' || hash === 'stool' || hash === 'history' || hash === 'settings') {
+                switchTab(hash);
+            }
+        });
 
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
                     .then((registration) => {
-                        console.log('Service Worker registered successfully:', registration.scope);
+                        console.log('Service Worker registered:', registration.scope);
                         
-                        // Check for updates
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New service worker available, prompt user to reload
-                                    if (confirm('A new version of Creon Tracker is available. Reload to update?')) {
-                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
-                                        window.location.reload();
-                                    }
+                                    showModal({
+                                        title: 'Update Available',
+                                        message: 'A new version of Creon Tracker is available. Would you like to update now?',
+                                        type: 'info',
+                                        confirmText: 'Update',
+                                        cancelText: 'Later',
+                                        onConfirm: () => {
+                                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                            window.location.reload();
+                                        }
+                                    });
                                 }
                             });
                         });
@@ -1009,22 +2006,18 @@
 
         // PWA Install Prompt
         let deferredPrompt;
-        let installPromptShown = localStorage.getItem('installPromptShown');
+        let installPromptShown = localStorage.getItem(STORAGE_KEYS.INSTALL_PROMPT);
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later
             deferredPrompt = e;
             
-            // Only show install prompt if user hasn't dismissed it before
             if (!installPromptShown) {
                 showInstallPromotion();
             }
         });
 
         function showInstallPromotion() {
-            // Create install banner
             const installBanner = document.createElement('div');
             installBanner.id = 'install-banner';
             installBanner.style.cssText = `
@@ -1062,49 +2055,32 @@
             
             document.body.appendChild(installBanner);
             
-            // Install button handler
             document.getElementById('install-button').addEventListener('click', async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response to install prompt: ${outcome}`);
+                    console.log(`User response: ${outcome}`);
                     deferredPrompt = null;
                 }
                 installBanner.remove();
-                localStorage.setItem('installPromptShown', 'true');
+                localStorage.setItem(STORAGE_KEYS.INSTALL_PROMPT, 'true');
             });
             
-            // Dismiss button handler
             document.getElementById('dismiss-button').addEventListener('click', () => {
                 installBanner.remove();
-                localStorage.setItem('installPromptShown', 'true');
+                localStorage.setItem(STORAGE_KEYS.INSTALL_PROMPT, 'true');
             });
         }
 
-        // Detect if app is installed
         window.addEventListener('appinstalled', () => {
-            console.log('Creon Tracker was installed');
+            console.log('App installed');
             deferredPrompt = null;
-            // Hide install banner if showing
             const banner = document.getElementById('install-banner');
             if (banner) banner.remove();
+            showToast('App installed successfully!', 'success', {
+                title: 'Welcome!'
+            });
         });
-
-        // Add CSS animation for install banner
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideUp {
-                from {
-                    transform: translateY(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
